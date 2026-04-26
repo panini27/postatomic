@@ -54,9 +54,9 @@ const TEMPLATE_DEMOS = {
 async function doExport(el, name) {
     try {
         await document.fonts.ready;
-        // Run twice — first pass warms up image loading, second captures correctly
-        await toPng(el, { pixelRatio: 2, skipAutoScale: true });
-        const dataUrl = await toPng(el, { pixelRatio: 2, skipAutoScale: true });
+        // Run twice — first pass warms up font/image loading, second captures correctly
+        await toPng(el, { pixelRatio: 2 });
+        const dataUrl = await toPng(el, { pixelRatio: 2 });
         const a = document.createElement('a');
         a.href = dataUrl; a.download = name; a.click();
     } catch (e) { console.error(e); alert('Erro ao exportar.'); }
@@ -547,8 +547,8 @@ JSON válido apenas:
                 {renderCanvas()}
             </div>
 
-            {/* Off-screen export targets — fixed outside viewport so html-to-image captures at true size */}
-            <div style={{ position: 'fixed', top: '-9999px', left: 0, pointerEvents: 'none', zIndex: -1 }}>
+            {/* Export targets — clipped to 0×0 at top-left so html-to-image captures children at exact true size */}
+            <div style={{ position: 'fixed', top: 0, left: 0, width: 0, height: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: -9999 }}>
                 {slides.map((sl, i) => (
                     <div key={i} id={`exp${i}`} style={{ width: dims.w, height: dims.h, overflow: 'hidden', fontFamily: "'Satoshi',sans-serif", position: 'relative' }}>
                         <Slide slide={sl} w={dims.w} h={dims.h} fmt={fmt} idx={i} total={slides.length} templateStyle={tpl} />

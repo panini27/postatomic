@@ -45,10 +45,11 @@ function GovBadge({ chip, modColor, fs = 20 }) {
             background: modColor + '22', border: `1px solid ${modColor}28`,
             fontSize: fs, fontWeight: 800, letterSpacing: '.08em',
             color: modColor, textTransform: 'uppercase',
+            whiteSpace: 'nowrap', flexShrink: 0,
         }}>
             <div style={{
                 width: Math.round(fs * .38), height: Math.round(fs * .38), borderRadius: '50%',
-                background: modColor, boxShadow: `0 0 9px ${modColor}90`,
+                background: modColor, boxShadow: `0 0 9px ${modColor}90`, flexShrink: 0,
             }} />
             {text}
         </div>
@@ -61,6 +62,7 @@ function Sig({ dark = true, fs = 19, name = 'PostAtomic' }) {
             fontSize: fs, fontWeight: 800, letterSpacing: '.06em',
             color: dark ? 'rgba(255,255,255,.28)' : 'rgba(0,40,100,.32)',
             textTransform: 'uppercase',
+            whiteSpace: 'nowrap', flexShrink: 0,
         }}>{name}</span>
     );
 }
@@ -102,7 +104,7 @@ function TplHD({ d, w, h, brand }) {
             <div style={{ position: 'absolute', top: 0, left: 0, width: w * .3, height: 3, background: `linear-gradient(90deg, ${modColor}, transparent)` }} />
 
             <div style={{ position: 'absolute', inset: 0, zIndex: 10, padding: p, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <GovBadge chip={d.chip} modColor={modColor} fs={20} />
+                <div style={{ flexShrink: 0 }}><GovBadge chip={d.chip} modColor={modColor} fs={20} /></div>
                 <div>
                     {d.stat && <div style={{ fontSize: stFs, fontWeight: 900, lineHeight: .88, letterSpacing: '-.06em', marginBottom: Math.round(h * .012), color: '#FFFFFF' }}>{d.stat}</div>}
                     {d.statLabel && <div style={{ fontSize: Math.round(sfs * .78), color: modColor, fontWeight: 700, marginBottom: Math.round(h * .018), lineHeight: 1.3, letterSpacing: '.02em', textTransform: 'uppercase' }}>{d.statLabel}</div>}
@@ -110,12 +112,12 @@ function TplHD({ d, w, h, brand }) {
                     <div style={{ fontSize: hfs, fontWeight: 900, color: '#F2F6FF', lineHeight: 1.08, letterSpacing: '-.035em', marginBottom: Math.round(h * .018) }}>{d.headline}</div>
                     {d.subheadline && <div style={{ fontSize: sfs, color: 'rgba(255,255,255,.45)', lineHeight: 1.5, fontWeight: 400, maxWidth: w * .82 }}>{d.subheadline}</div>}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 100, padding: `${Math.round(p * .22)}px ${Math.round(p * .48)}px` }}>
-                        <div style={{ width: 7, height: 7, borderRadius: '50%', background: modColor, boxShadow: `0 0 10px ${modColor}` }} />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 100, padding: `${Math.round(p * .22)}px ${Math.round(p * .48)}px`, flexShrink: 0 }}>
+                        <div style={{ width: 7, height: 7, borderRadius: '50%', background: modColor, boxShadow: `0 0 10px ${modColor}`, flexShrink: 0 }} />
                         <Sig dark fs={18} name={sigName} />
                     </div>
-                    {d.cta && <div style={{ background: `linear-gradient(135deg, ${primary}, ${accent})`, color: '#fff', whiteSpace: 'nowrap', padding: `${Math.round(p * .22)}px ${Math.round(p * .5)}px`, borderRadius: 100, fontSize: 21, fontWeight: 800, boxShadow: `0 4px 24px rgba(${rgb(primary)},.5), 0 0 0 1px rgba(255,255,255,.08)` }}>{d.cta} →</div>}
+                    {d.cta && <div style={{ background: `linear-gradient(135deg, ${primary}, ${accent})`, color: '#fff', whiteSpace: 'nowrap', flexShrink: 0, padding: `${Math.round(p * .22)}px ${Math.round(p * .5)}px`, borderRadius: 100, fontSize: 21, fontWeight: 800, boxShadow: `0 4px 24px rgba(${rgb(primary)},.5), 0 0 0 1px rgba(255,255,255,.08)` }}>{d.cta} →</div>}
                 </div>
             </div>
         </div>
@@ -366,7 +368,7 @@ function TplImpact({ d, w, h, brand }) {
 
             <div style={{ position: 'absolute', inset: 0, zIndex: 10, padding: p, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 {/* Top row */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
                     <GovBadge chip={d.chip} modColor={modColor} fs={19} />
                     <Sig dark fs={17} name={sigName} />
                 </div>
@@ -468,7 +470,7 @@ function TplContrast({ d, w, h, brand }) {
 
             <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', padding: p, gap: Math.round(h * .025) }}>
                 {/* Header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
                     <GovBadge chip={d.chip} modColor={modColor} fs={18} />
                     <Sig dark fs={17} name={sigName} />
                 </div>
@@ -514,13 +516,15 @@ function TplContrast({ d, w, h, brand }) {
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                         paddingTop: Math.round(h * .016),
                         borderTop: '1px solid rgba(255,255,255,.07)',
+                        flexShrink: 0, gap: 16,
                     }}>
-                        <div style={{ fontSize: subFs, color: 'rgba(255,255,255,.35)', fontWeight: 500 }}>Próximo passo</div>
+                        <div style={{ fontSize: subFs, color: 'rgba(255,255,255,.35)', fontWeight: 500, whiteSpace: 'nowrap', flexShrink: 0 }}>Próximo passo</div>
                         <div style={{
                             background: `linear-gradient(135deg, ${primary}, ${modColor})`,
                             color: '#fff', padding: `${Math.round(p * .25)}px ${Math.round(p * .6)}px`,
                             borderRadius: 100, fontSize: 22, fontWeight: 800,
                             boxShadow: `0 4px 20px rgba(${rgb(primary)}, .4)`,
+                            whiteSpace: 'nowrap', flexShrink: 0,
                         }}>
                             {d.cta} →
                         </div>
@@ -578,9 +582,9 @@ function TplManifesto({ d, w, h, brand }) {
                     border: '1px solid rgba(255,255,255,.09)',
                     fontSize: 18, fontWeight: 700, letterSpacing: '.1em',
                     color: 'rgba(255,255,255,.5)', textTransform: 'uppercase',
-                    alignSelf: 'flex-start',
+                    alignSelf: 'flex-start', whiteSpace: 'nowrap', flexShrink: 0,
                 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: modColor }} />
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: modColor, flexShrink: 0 }} />
                     {d.chip || 'MANIFESTO'}
                 </div>
 
@@ -612,12 +616,10 @@ function TplManifesto({ d, w, h, brand }) {
                 </div>
 
                 {/* Footer */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: Math.round(h * .016), borderTop: '1px solid rgba(255,255,255,.06)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <Sig dark fs={17} name={sigName} />
-                    </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: Math.round(h * .016), borderTop: '1px solid rgba(255,255,255,.06)', flexShrink: 0, gap: 16 }}>
+                    <Sig dark fs={17} name={sigName} />
                     {d.cta && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: Math.round(subFs * .85), color: modColor, fontWeight: 800 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: Math.round(subFs * .85), color: modColor, fontWeight: 800, whiteSpace: 'nowrap', flexShrink: 0 }}>
                             {d.cta} <span style={{ fontSize: Math.round(subFs), lineHeight: 1 }}>→</span>
                         </div>
                     )}
