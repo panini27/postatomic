@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toPng } from 'html-to-image';
 import { useBrand } from '../../contexts/BrandContext';
 import { useUsage } from '../../hooks/useUsage';
 import { usePosts } from '../../hooks/usePosts';
@@ -51,20 +52,13 @@ const TEMPLATE_DEMOS = {
 };
 
 async function doExport(el, name) {
-    if (!window.html2canvas) { alert('Exportador carregando, tente novamente.'); return; }
     try {
         await document.fonts.ready;
-        const cv = await window.html2canvas(el, {
-            scale: 2, useCORS: true, allowTaint: false, logging: false,
-            backgroundColor: '#050505', width: el.offsetWidth, height: el.offsetHeight,
-            scrollX: 0, scrollY: 0,
-        });
-        cv.toBlob((blob) => {
-            const u = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = u; a.download = name; a.click();
-            setTimeout(() => URL.revokeObjectURL(u), 5000);
-        }, 'image/png');
+        // Run twice — first pass warms up image loading, second captures correctly
+        await toPng(el, { pixelRatio: 2, skipAutoScale: true });
+        const dataUrl = await toPng(el, { pixelRatio: 2, skipAutoScale: true });
+        const a = document.createElement('a');
+        a.href = dataUrl; a.download = name; a.click();
     } catch (e) { console.error(e); alert('Erro ao exportar.'); }
 }
 
@@ -260,10 +254,7 @@ export default function PostMachine() {
     const ph = Math.round(dims.h * slideScale);
 
     useEffect(() => {
-        const s = document.createElement('script');
-        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-        document.head.appendChild(s);
-        // Satoshi font for export rendering
+        // Preload Satoshi font so export captures it correctly
         const lnk = document.createElement('link');
         lnk.href = 'https://api.fontshare.com/v2/css?f[]=satoshi@900,800,700,500,400&display=swap';
         lnk.rel = 'stylesheet'; document.head.appendChild(lnk);
@@ -556,10 +547,10 @@ JSON válido apenas:
                 {renderCanvas()}
             </div>
 
-            {/* Off-screen export targets */}
-            <div style={{ position: 'absolute', left: '-9999px', top: 0, pointerEvents: 'none' }}>
+            {/* Off-screen export targets — fixed outside viewport so html-to-image captures at true size */}
+            <div style={{ position: 'fixed', top: '-9999px', left: 0, pointerEvents: 'none', zIndex: -1 }}>
                 {slides.map((sl, i) => (
-                    <div key={i} id={`exp${i}`} style={{ width: dims.w, height: dims.h, overflow: 'hidden', fontFamily: "'Satoshi',sans-serif", background: '#050505', position: 'relative' }}>
+                    <div key={i} id={`exp${i}`} style={{ width: dims.w, height: dims.h, overflow: 'hidden', fontFamily: "'Satoshi',sans-serif", position: 'relative' }}>
                         <Slide slide={sl} w={dims.w} h={dims.h} fmt={fmt} idx={i} total={slides.length} templateStyle={tpl} />
                     </div>
                 ))}

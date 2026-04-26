@@ -79,36 +79,43 @@ function TplHD({ d, w, h, brand }) {
     const mod = modMap[d.accentModule] || modMap.none || { c: accent };
     const modColor = mod.c;
     const sigName = brand?.tenantMeta?.name || 'PostAtomic';
-    const p = Math.round(w * .059);
-    const hfs = h > 1400 ? Math.round(w * .094) : Math.round(w * .082);
-    const sfs = Math.round(w * .037);
-    const stFs = Math.round(w * .163);
+    const p = Math.round(w * .062);
+    const hfs = h > 1400 ? Math.round(w * .092) : Math.round(w * .08);
+    const sfs = Math.round(w * .036);
+    const stFs = Math.round(w * .17);
 
     return (
         <div style={{
             width: w, height: h, position: 'relative', overflow: 'hidden',
             fontFamily: "'Satoshi',sans-serif",
-            background: `radial-gradient(ellipse 100% 52% at 50% -8%,rgba(${rgb(primary)},.3) 0%,${bgDark} 55%)`,
+            background: bgDark,
         }}>
-            <Grid w={w} h={h} color={accent} />
-            <Orb x={w * .5} y={0} r={w * .78} color={modColor} o={.09} />
-            {[.48, .62].map((r, i) => (
-                <div key={i} style={{ position: 'absolute', top: h * .04, right: -w * r * .32, width: w * r, height: w * r, borderRadius: '50%', border: `1px solid rgba(255,255,255,${.04 - i * .015})`, pointerEvents: 'none' }} />
+            {/* Rich layered background */}
+            <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 120% 55% at 50% -5%, rgba(${rgb(primary)},.35) 0%, transparent 60%)`, pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: h * .45, background: `radial-gradient(ellipse 80% 80% at 20% 120%, rgba(${rgb(modColor)},.18) 0%, transparent 65%)`, pointerEvents: 'none' }} />
+            <Grid w={w} h={h} color={accent} op={0.04} />
+            {/* Decorative rings */}
+            {[.42, .58, .74].map((r, i) => (
+                <div key={i} style={{ position: 'absolute', top: -w * r * .4, right: -w * r * .35, width: w * r, height: w * r, borderRadius: '50%', border: `1px solid rgba(255,255,255,${.045 - i * .012})`, pointerEvents: 'none' }} />
             ))}
+            {/* Top accent line */}
+            <div style={{ position: 'absolute', top: 0, left: 0, width: w * .3, height: 3, background: `linear-gradient(90deg, ${modColor}, transparent)` }} />
+
             <div style={{ position: 'absolute', inset: 0, zIndex: 10, padding: p, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <GovBadge chip={d.chip} modColor={modColor} fs={20} />
                 <div>
-                    {d.stat && <div style={{ fontSize: stFs, fontWeight: 900, lineHeight: 1, letterSpacing: '-.05em', marginBottom: Math.round(h * .017), color: '#FFFFFF' }}>{d.stat}</div>}
-                    {d.statLabel && <div style={{ fontSize: Math.round(sfs * .82), color: 'rgba(255,255,255,.42)', fontWeight: 500, marginBottom: Math.round(h * .022), lineHeight: 1.4 }}>{d.statLabel}</div>}
-                    <div style={{ fontSize: hfs, fontWeight: 900, color: '#FFF', lineHeight: 1.1, letterSpacing: '-.03em', marginBottom: Math.round(h * .02) }}>{d.headline}</div>
-                    {d.subheadline && <div style={{ fontSize: sfs, color: 'rgba(255,255,255,.48)', lineHeight: 1.45, fontWeight: 500, maxWidth: w * .83 }}>{d.subheadline}</div>}
+                    {d.stat && <div style={{ fontSize: stFs, fontWeight: 900, lineHeight: .88, letterSpacing: '-.06em', marginBottom: Math.round(h * .012), color: '#FFFFFF' }}>{d.stat}</div>}
+                    {d.statLabel && <div style={{ fontSize: Math.round(sfs * .78), color: modColor, fontWeight: 700, marginBottom: Math.round(h * .018), lineHeight: 1.3, letterSpacing: '.02em', textTransform: 'uppercase' }}>{d.statLabel}</div>}
+                    {(d.stat || d.statLabel) && <div style={{ width: w * .1, height: 2, background: modColor, marginBottom: Math.round(h * .024), opacity: 0.6 }} />}
+                    <div style={{ fontSize: hfs, fontWeight: 900, color: '#F2F6FF', lineHeight: 1.08, letterSpacing: '-.035em', marginBottom: Math.round(h * .018) }}>{d.headline}</div>
+                    {d.subheadline && <div style={{ fontSize: sfs, color: 'rgba(255,255,255,.45)', lineHeight: 1.5, fontWeight: 400, maxWidth: w * .82 }}>{d.subheadline}</div>}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.07)', borderRadius: 100, padding: `${Math.round(p * .24)}px ${Math.round(p * .5)}px` }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: modColor, boxShadow: `0 0 10px ${modColor}` }} />
-                        <Sig dark fs={19} name={sigName} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 100, padding: `${Math.round(p * .22)}px ${Math.round(p * .48)}px` }}>
+                        <div style={{ width: 7, height: 7, borderRadius: '50%', background: modColor, boxShadow: `0 0 10px ${modColor}` }} />
+                        <Sig dark fs={18} name={sigName} />
                     </div>
-                    {d.cta && <div style={{ background: primary, color: '#fff', whiteSpace: 'nowrap', padding: `${Math.round(p * .24)}px ${Math.round(p * .52)}px`, borderRadius: 100, fontSize: 22, fontWeight: 800, boxShadow: `0 4px 22px rgba(${rgb(primary)},.48)` }}>{d.cta} →</div>}
+                    {d.cta && <div style={{ background: `linear-gradient(135deg, ${primary}, ${accent})`, color: '#fff', whiteSpace: 'nowrap', padding: `${Math.round(p * .22)}px ${Math.round(p * .5)}px`, borderRadius: 100, fontSize: 21, fontWeight: 800, boxShadow: `0 4px 24px rgba(${rgb(primary)},.5), 0 0 0 1px rgba(255,255,255,.08)` }}>{d.cta} →</div>}
                 </div>
             </div>
         </div>
@@ -331,93 +338,83 @@ function TplImpact({ d, w, h, brand }) {
     const modColor = mod.c;
     const sigName = brand?.tenantMeta?.name || 'PostAtomic';
     const p = Math.round(w * .07);
-
-    const statFs = Math.round(w * .26);
-    const headFs = Math.round(w * .07);
-    const subFs = Math.round(w * .04);
+    const statFs = Math.round(w * .30);
+    const headFs = Math.round(w * .068);
+    const subFs = Math.round(w * .038);
 
     return (
         <div style={{
             width: w, height: h, position: 'relative', overflow: 'hidden',
             fontFamily: "'Satoshi',sans-serif",
-            background: '#03091A',
+            background: '#020810',
         }}>
-            {/* Full-bleed diagonal accent panel */}
+            {/* Giant ghost stat behind everything */}
             <div style={{
-                position: 'absolute', top: 0, right: 0,
-                width: w * .55, height: h,
-                background: `linear-gradient(155deg, ${modColor}18 0%, transparent 60%)`,
-                pointerEvents: 'none',
-            }} />
-            {/* Bottom glow */}
-            <div style={{
-                position: 'absolute', bottom: -h * .1, left: 0, right: 0, height: h * .5,
-                background: `radial-gradient(ellipse 90% 60% at 30% 100%, rgba(${rgb(primary)},0.22) 0%, transparent 70%)`,
-                pointerEvents: 'none',
-            }} />
-            {/* Horizontal rule accent */}
-            <div style={{ position: 'absolute', top: 0, left: 0, width: w * .35, height: 4, background: modColor }} />
+                position: 'absolute', right: -w * .06, top: h * .08,
+                fontSize: Math.round(w * .62), fontWeight: 900, lineHeight: 1,
+                letterSpacing: '-.08em', color: 'rgba(255,255,255,.028)',
+                pointerEvents: 'none', userSelect: 'none',
+                fontFamily: "'Satoshi',sans-serif",
+            }}>{d.stat || '∞'}</div>
+            {/* Strong left glow */}
+            <div style={{ position: 'absolute', left: -w * .2, top: h * .3, width: w * .9, height: w * .9, borderRadius: '50%', background: `radial-gradient(circle, rgba(${rgb(primary)},0.28) 0%, transparent 65%)`, pointerEvents: 'none' }} />
+            {/* Right accent panel */}
+            <div style={{ position: 'absolute', top: 0, right: 0, width: 5, height: h, background: `linear-gradient(180deg, ${modColor} 0%, transparent 60%)`, pointerEvents: 'none' }} />
+            {/* Top bar */}
+            <div style={{ position: 'absolute', top: 0, left: 0, width: w * .42, height: 4, background: `linear-gradient(90deg, ${modColor}, ${accent})`, pointerEvents: 'none' }} />
+            <Grid w={w} h={h} color={primary} op={0.035} />
 
             <div style={{ position: 'absolute', inset: 0, zIndex: 10, padding: p, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                {/* Top */}
+                {/* Top row */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <GovBadge chip={d.chip} modColor={modColor} fs={20} />
-                    <Sig dark fs={18} name={sigName} />
+                    <GovBadge chip={d.chip} modColor={modColor} fs={19} />
+                    <Sig dark fs={17} name={sigName} />
                 </div>
 
-                {/* Central stat block */}
+                {/* Hero stat */}
                 <div>
                     {d.stat && (
                         <div style={{
-                            fontSize: statFs, fontWeight: 900, lineHeight: .85,
-                            letterSpacing: '-.06em', color: '#FFFFFF',
-                            marginBottom: Math.round(h * .025),
-                        }}>
-                            {d.stat}
-                        </div>
+                            fontSize: statFs, fontWeight: 900, lineHeight: .82,
+                            letterSpacing: '-.07em', color: '#FFFFFF',
+                            marginBottom: Math.round(h * .016),
+                        }}>{d.stat}</div>
                     )}
                     {d.statLabel && (
                         <div style={{
-                            fontSize: Math.round(subFs * .88), color: modColor,
-                            fontWeight: 700, letterSpacing: '.04em',
-                            textTransform: 'uppercase',
-                            marginBottom: Math.round(h * .03),
+                            display: 'inline-flex', alignItems: 'center', gap: 10,
+                            fontSize: Math.round(subFs * .82), color: modColor,
+                            fontWeight: 800, letterSpacing: '.06em', textTransform: 'uppercase',
+                            marginBottom: Math.round(h * .028),
+                            background: `${modColor}15`,
+                            border: `1px solid ${modColor}30`,
+                            borderRadius: 6, padding: `${Math.round(w * .012)}px ${Math.round(w * .02)}px`,
                         }}>
+                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: modColor, boxShadow: `0 0 8px ${modColor}` }} />
                             {d.statLabel}
                         </div>
                     )}
-                    <div style={{
-                        width: w * .12, height: 3,
-                        background: `linear-gradient(90deg, ${modColor}, transparent)`,
-                        marginBottom: Math.round(h * .03),
-                    }} />
-                    <div style={{
-                        fontSize: headFs, fontWeight: 900, color: '#F0F6FF',
-                        lineHeight: 1.1, letterSpacing: '-.025em',
-                        maxWidth: w * .85,
-                        marginBottom: d.subheadline ? Math.round(h * .018) : 0,
-                    }}>
+                    <div style={{ width: w * .14, height: 3, background: modColor, marginBottom: Math.round(h * .028), opacity: 0.7 }} />
+                    <div style={{ fontSize: headFs, fontWeight: 900, color: '#EEF4FF', lineHeight: 1.1, letterSpacing: '-.03em', maxWidth: w * .88, marginBottom: d.subheadline ? Math.round(h * .016) : 0 }}>
                         {d.headline}
                     </div>
                     {d.subheadline && (
-                        <div style={{ fontSize: subFs, color: 'rgba(255,255,255,.45)', lineHeight: 1.5, fontWeight: 400, maxWidth: w * .75 }}>
+                        <div style={{ fontSize: subFs, color: 'rgba(255,255,255,.42)', lineHeight: 1.5, fontWeight: 400, maxWidth: w * .78 }}>
                             {d.subheadline}
                         </div>
                     )}
                 </div>
 
-                {/* Bottom CTA */}
+                {/* CTA */}
                 {d.cta && (
                     <div style={{
                         display: 'inline-flex', alignSelf: 'flex-start',
-                        background: modColor, color: '#fff',
-                        padding: `${Math.round(p * .28)}px ${Math.round(p * .65)}px`,
-                        borderRadius: 100, fontSize: 24, fontWeight: 800,
-                        boxShadow: `0 0 32px rgba(${rgb(modColor)}, .45)`,
+                        background: `linear-gradient(135deg, ${modColor}, ${primary})`,
+                        color: '#fff', padding: `${Math.round(p * .26)}px ${Math.round(p * .62)}px`,
+                        borderRadius: 100, fontSize: 23, fontWeight: 800,
+                        boxShadow: `0 4px 28px rgba(${rgb(modColor)}, .5), 0 0 0 1px rgba(255,255,255,.08)`,
                         letterSpacing: '-.01em',
-                    }}>
-                        {d.cta} →
-                    </div>
+                    }}>{d.cta} →</div>
                 )}
             </div>
         </div>
@@ -548,94 +545,66 @@ function TplManifesto({ d, w, h, brand }) {
     const modColor = mod.c;
     const sigName = brand?.tenantMeta?.name || 'PostAtomic';
     const p = Math.round(w * .075);
-
-    const headFs = h > 1400 ? Math.round(w * .118) : Math.round(w * .105);
-    const subFs = Math.round(w * .042);
-    const chipFs = 19;
+    const headFs = h > 1400 ? Math.round(w * .112) : Math.round(w * .098);
+    const subFs = Math.round(w * .04);
 
     return (
         <div style={{
             width: w, height: h, position: 'relative', overflow: 'hidden',
             fontFamily: "'Satoshi',sans-serif",
-            background: `linear-gradient(160deg, #060E20 0%, #0A1628 40%, ${modColor}18 100%)`,
+            background: '#050C1A',
         }}>
-            {/* Large decorative background text */}
+            {/* Rich layered background */}
+            <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(160deg, rgba(${rgb(primary)},0.12) 0%, #050C1A 45%, rgba(${rgb(modColor)},0.1) 100%)`, pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', top: h * .15, left: -w * .3, width: w * .9, height: w * .9, borderRadius: '50%', background: `radial-gradient(circle, rgba(${rgb(primary)},0.12) 0%, transparent 65%)`, pointerEvents: 'none' }} />
+            {/* Ghost number */}
             <div style={{
-                position: 'absolute', bottom: -Math.round(h * .03), left: p,
-                fontSize: Math.round(w * .5), fontWeight: 900, letterSpacing: '-.08em',
-                color: 'rgba(255,255,255,.025)', lineHeight: 1,
-                userSelect: 'none', pointerEvents: 'none',
+                position: 'absolute', right: -w * .04, bottom: -h * .04,
+                fontSize: Math.round(w * .55), fontWeight: 900, letterSpacing: '-.08em',
+                color: 'rgba(255,255,255,.022)', lineHeight: 1, pointerEvents: 'none', userSelect: 'none',
                 fontFamily: "'Satoshi',sans-serif",
-            }}>
-                {(d.stat || '∞').replace(/[^0-9A-Z%×+]/gi, '') || '∞'}
-            </div>
+            }}>{(d.stat || '∞').replace(/[^0-9A-Z%×+∞]/gi, '') || '∞'}</div>
+            {/* Top gradient bar */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${modColor}, ${primary} 60%, transparent)` }} />
+            {/* Right edge accent */}
+            <div style={{ position: 'absolute', top: 0, right: 0, width: 3, height: h * .6, background: `linear-gradient(180deg, ${modColor}80, transparent)` }} />
 
-            {/* Diagonal stripe */}
-            <div style={{
-                position: 'absolute', top: 0, right: 0,
-                width: 5, height: h,
-                background: `linear-gradient(180deg, ${modColor} 0%, transparent 100%)`,
-                opacity: 0.6,
-            }} />
-
-            {/* Top color bar */}
-            <div style={{
-                position: 'absolute', top: 0, left: 0, right: 0, height: 5,
-                background: `linear-gradient(90deg, ${modColor}, ${primary}, transparent)`,
-            }} />
-
-            <div style={{ position: 'absolute', inset: 0, zIndex: 10, padding: p, paddingTop: p + 12, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                {/* Top label */}
+            <div style={{ position: 'absolute', inset: 0, zIndex: 10, padding: p, paddingTop: p + 10, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                {/* Chip label */}
                 <div style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 10,
-                    padding: `${Math.round(chipFs * .35)}px ${Math.round(chipFs * .75)}px`,
-                    borderRadius: 6, background: 'rgba(255,255,255,.06)',
-                    border: '1px solid rgba(255,255,255,.1)',
-                    fontSize: chipFs, fontWeight: 700, letterSpacing: '.1em',
-                    color: 'rgba(255,255,255,.55)', textTransform: 'uppercase',
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                    padding: `${Math.round(w * .014)}px ${Math.round(w * .026)}px`,
+                    borderRadius: 6, background: 'rgba(255,255,255,.05)',
+                    border: '1px solid rgba(255,255,255,.09)',
+                    fontSize: 18, fontWeight: 700, letterSpacing: '.1em',
+                    color: 'rgba(255,255,255,.5)', textTransform: 'uppercase',
                     alignSelf: 'flex-start',
                 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: modColor }} />
                     {d.chip || 'MANIFESTO'}
                 </div>
 
-                {/* Main content block */}
+                {/* Main block */}
                 <div>
                     {d.stat && (
-                        <div style={{
-                            fontSize: Math.round(w * .2), fontWeight: 900, lineHeight: .9,
-                            letterSpacing: '-.07em', color: modColor,
-                            marginBottom: Math.round(h * .02),
-                        }}>
+                        <div style={{ fontSize: Math.round(w * .19), fontWeight: 900, lineHeight: .88, letterSpacing: '-.07em', color: modColor, marginBottom: Math.round(h * .016) }}>
                             {d.stat}
                         </div>
                     )}
-
-                    <div style={{
-                        fontSize: headFs, fontWeight: 900, color: '#FFFFFF',
-                        lineHeight: 1.05, letterSpacing: '-.04em',
-                        marginBottom: Math.round(h * .025),
-                    }}>
+                    <div style={{ fontSize: headFs, fontWeight: 900, color: '#FFFFFF', lineHeight: 1.04, letterSpacing: '-.04em', marginBottom: Math.round(h * .022) }}>
                         {d.headline}
                     </div>
-
                     {d.subheadline && (
-                        <div style={{
-                            fontSize: subFs, color: 'rgba(255,255,255,.52)',
-                            lineHeight: 1.55, fontWeight: 400,
-                            maxWidth: w * .88,
-                            borderLeft: `3px solid ${modColor}`,
-                            paddingLeft: Math.round(w * .04),
-                        }}>
+                        <div style={{ fontSize: subFs, color: 'rgba(255,255,255,.48)', lineHeight: 1.55, fontWeight: 400, maxWidth: w * .86, borderLeft: `3px solid ${modColor}`, paddingLeft: Math.round(w * .038), marginBottom: Math.round(h * .022) }}>
                             {d.subheadline}
                         </div>
                     )}
-
                     {d.items?.length > 0 && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: Math.round(h * .015), marginTop: Math.round(h * .025) }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: Math.round(h * .013) }}>
                             {d.items.map((item, i) => (
-                                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: Math.round(w * .025) }}>
-                                    <div style={{ width: Math.round(w * .022), height: Math.round(w * .022), borderRadius: '50%', background: modColor, flexShrink: 0, marginTop: Math.round(w * .009), boxShadow: `0 0 8px ${modColor}` }} />
-                                    <span style={{ fontSize: Math.round(subFs * .9), color: 'rgba(255,255,255,.65)', fontWeight: 500, lineHeight: 1.4 }}>{item}</span>
+                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: Math.round(w * .028), padding: `${Math.round(h * .012)}px ${Math.round(w * .03)}px`, background: 'rgba(255,255,255,.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,.06)' }}>
+                                    <div style={{ width: Math.round(w * .02), height: Math.round(w * .02), borderRadius: '50%', background: modColor, flexShrink: 0, boxShadow: `0 0 8px ${modColor}80` }} />
+                                    <span style={{ fontSize: Math.round(subFs * .88), color: 'rgba(255,255,255,.68)', fontWeight: 500, lineHeight: 1.35 }}>{item}</span>
                                 </div>
                             ))}
                         </div>
@@ -643,17 +612,15 @@ function TplManifesto({ d, w, h, brand }) {
                 </div>
 
                 {/* Footer */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <Sig dark fs={18} name={sigName} />
-                        {d.cta && <span style={{ fontSize: Math.round(subFs * .82), color: modColor, fontWeight: 700 }}>{d.cta}</span>}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: Math.round(h * .016), borderTop: '1px solid rgba(255,255,255,.06)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Sig dark fs={17} name={sigName} />
                     </div>
-                    {/* Visual accent dots */}
-                    <div style={{ display: 'flex', gap: 6 }}>
-                        {[1, 0.5, 0.25].map((op, i) => (
-                            <div key={i} style={{ width: Math.round(w * .018), height: Math.round(w * .018), borderRadius: '50%', background: modColor, opacity: op }} />
-                        ))}
-                    </div>
+                    {d.cta && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: Math.round(subFs * .85), color: modColor, fontWeight: 800 }}>
+                            {d.cta} <span style={{ fontSize: Math.round(subFs), lineHeight: 1 }}>→</span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
