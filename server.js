@@ -18,6 +18,7 @@ const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
 
 const PLANS       = { trial: 10, starter: 20, pro: 100, agency: 500 };
 const DAILY_LIMIT = 3; // Global: 3 posts per user per day, resets at 00:00
+const UNLIMITED_EMAILS = ['geovanepanini@live.com']; // Admin accounts with no daily limit
 
 /* ─── Helpers ─────────────────────────────────────────────────────────── */
 function slugify(name) {
@@ -289,10 +290,11 @@ app.post('/api/posts/generate', auth, async (req, res) => {
     try {
         // 1. Check daily limit (3/day per user, resets at 00:00)
         const today = getToday();
+        const isUnlimited = UNLIMITED_EMAILS.includes(req.user.email?.toLowerCase());
         const dailyRows = await db`SELECT posts_generated FROM daily_usage WHERE user_id = ${req.user.userId} AND date = ${today}`;
         const dailyUsed = dailyRows[0]?.posts_generated ?? 0;
 
-        if (dailyUsed >= DAILY_LIMIT) {
+        if (!isUnlimited && dailyUsed >= DAILY_LIMIT) {
             return res.status(429).json({
                 error: `Limite diário atingido. Você pode criar até ${DAILY_LIMIT} posts por dia. O limite reinicia à meia-noite.`,
                 limitReached: true,
@@ -399,16 +401,17 @@ app.get('/api/usage', auth, async (req, res) => {
             db`SELECT posts_generated FROM daily_usage WHERE user_id = ${req.user.userId} AND date = ${today}`,
         ]);
 
-        const plan      = planRows[0]?.plan ?? 'trial';
-        const monthUsed = monthRows[0]?.posts_generated ?? 0;
-        const dailyUsed = dailyRows[0]?.posts_generated ?? 0;
+        const plan        = planRows[0]?.plan ?? 'trial';
+        const monthUsed   = monthRows[0]?.posts_generated ?? 0;
+        const dailyUsed   = dailyRows[0]?.posts_generated ?? 0;
+        const isUnlimited = UNLIMITED_EMAILS.includes(req.user.email?.toLowerCase());
 
         res.json({
             used:       monthUsed,
             limit:      PLANS[plan] ?? 10,
             plan,
             dailyUsed,
-            dailyLimit: DAILY_LIMIT,
+            dailyLimit: isUnlimited ? 9999 : DAILY_LIMIT,
         });
     } catch (err) {
         console.error('Usage error:', err);
