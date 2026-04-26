@@ -184,84 +184,104 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.get('/api/auth/me', auth, async (req, res) => {
-    const rows = await db`
-        SELECT u.id, u.email, u.name, u.role,
-               t.id as tid, t.slug, t.name as tname,
-               t.description, t.segment, t.target_audience,
-               t.tone, t.default_cta, t.platforms, t.tags,
-               t.brand_config, t.logo_url, t.plan, t.trial_ends_at
-        FROM users u
-        JOIN tenants t ON u.tenant_id = t.id
-        WHERE u.id = ${req.user.userId}`;
-    if (!rows.length) return res.status(404).json({ error: 'Usuário não encontrado' });
-    const r = rows[0];
-    res.json({
-        user: { id: r.id, email: r.email, name: r.name, role: r.role },
-        tenant: {
-            id: r.tid, slug: r.slug, name: r.tname,
-            description: r.description, segment: r.segment,
-            target_audience: r.target_audience, tone: r.tone,
-            default_cta: r.default_cta, platforms: r.platforms,
-            tags: r.tags, brand_config: r.brand_config, logo_url: r.logo_url,
-            plan: r.plan, trial_ends_at: r.trial_ends_at,
-        },
-    });
+    try {
+        const rows = await db`
+            SELECT u.id, u.email, u.name, u.role,
+                   t.id as tid, t.slug, t.name as tname,
+                   t.description, t.segment, t.target_audience,
+                   t.tone, t.default_cta, t.platforms, t.tags,
+                   t.brand_config, t.logo_url, t.plan, t.trial_ends_at
+            FROM users u
+            JOIN tenants t ON u.tenant_id = t.id
+            WHERE u.id = ${req.user.userId}`;
+        if (!rows.length) return res.status(404).json({ error: 'Usuário não encontrado' });
+        const r = rows[0];
+        res.json({
+            user: { id: r.id, email: r.email, name: r.name, role: r.role },
+            tenant: {
+                id: r.tid, slug: r.slug, name: r.tname,
+                description: r.description, segment: r.segment,
+                target_audience: r.target_audience, tone: r.tone,
+                default_cta: r.default_cta, platforms: r.platforms,
+                tags: r.tags, brand_config: r.brand_config, logo_url: r.logo_url,
+                plan: r.plan, trial_ends_at: r.trial_ends_at,
+            },
+        });
+    } catch (err) {
+        console.error('Me error:', err);
+        res.status(500).json({ error: err.message || 'Erro interno' });
+    }
 });
 
 /* ─── TENANTS ─────────────────────────────────────────────────────────── */
 app.get('/api/tenants/:slug', auth, async (req, res) => {
-    const rows = await db`SELECT * FROM tenants WHERE slug = ${req.params.slug}`;
-    if (!rows.length) return res.status(404).json({ error: 'Workspace não encontrado' });
-    if (rows[0].id !== req.user.tenantId) return res.status(403).json({ error: 'Acesso negado' });
-    res.json(rows[0]);
+    try {
+        const rows = await db`SELECT * FROM tenants WHERE slug = ${req.params.slug}`;
+        if (!rows.length) return res.status(404).json({ error: 'Workspace não encontrado' });
+        if (rows[0].id !== req.user.tenantId) return res.status(403).json({ error: 'Acesso negado' });
+        res.json(rows[0]);
+    } catch (err) {
+        console.error('Get tenant error:', err);
+        res.status(500).json({ error: err.message || 'Erro interno' });
+    }
 });
 
 app.patch('/api/tenants/:slug', auth, async (req, res) => {
-    if (req.user.role !== 'owner') return res.status(403).json({ error: 'Apenas o owner pode editar as configurações' });
-    const rows = await db`SELECT id FROM tenants WHERE slug = ${req.params.slug}`;
-    if (!rows.length || rows[0].id !== req.user.tenantId) return res.status(403).json({ error: 'Acesso negado' });
+    try {
+        if (req.user.role !== 'owner') return res.status(403).json({ error: 'Apenas o owner pode editar as configurações' });
+        const rows = await db`SELECT id FROM tenants WHERE slug = ${req.params.slug}`;
+        if (!rows.length || rows[0].id !== req.user.tenantId) return res.status(403).json({ error: 'Acesso negado' });
 
-    const { name, description, segment, target_audience, tone, default_cta, platforms, tags, brand_config, logo_url } = req.body;
+        const { name, description, segment, target_audience, tone, default_cta, platforms, tags, brand_config, logo_url } = req.body;
 
-    await db`UPDATE tenants SET
-        name            = COALESCE(${name ?? null}, name),
-        description     = COALESCE(${description ?? null}, description),
-        segment         = COALESCE(${segment ?? null}, segment),
-        target_audience = COALESCE(${target_audience ?? null}, target_audience),
-        tone            = COALESCE(${tone ?? null}, tone),
-        default_cta     = COALESCE(${default_cta ?? null}, default_cta),
-        platforms       = COALESCE(${platforms ? JSON.stringify(platforms) : null}::text[], platforms),
-        tags            = COALESCE(${tags ? JSON.stringify(tags) : null}::text[], tags),
-        brand_config    = COALESCE(${brand_config ? JSON.stringify(brand_config) : null}::jsonb, brand_config),
-        logo_url        = COALESCE(${logo_url ?? null}, logo_url)
-    WHERE id = ${req.user.tenantId}`;
+        await db`UPDATE tenants SET
+            name            = COALESCE(${name ?? null}, name),
+            description     = COALESCE(${description ?? null}, description),
+            segment         = COALESCE(${segment ?? null}, segment),
+            target_audience = COALESCE(${target_audience ?? null}, target_audience),
+            tone            = COALESCE(${tone ?? null}, tone),
+            default_cta     = COALESCE(${default_cta ?? null}, default_cta),
+            platforms       = COALESCE(${platforms ? JSON.stringify(platforms) : null}::text[], platforms),
+            tags            = COALESCE(${tags ? JSON.stringify(tags) : null}::text[], tags),
+            brand_config    = COALESCE(${brand_config ? JSON.stringify(brand_config) : null}::jsonb, brand_config),
+            logo_url        = COALESCE(${logo_url ?? null}, logo_url)
+        WHERE id = ${req.user.tenantId}`;
 
-    const updated = await db`SELECT * FROM tenants WHERE id = ${req.user.tenantId}`;
-    res.json(updated[0]);
+        const updated = await db`SELECT * FROM tenants WHERE id = ${req.user.tenantId}`;
+        res.json(updated[0]);
+    } catch (err) {
+        console.error('Update tenant error:', err);
+        res.status(500).json({ error: err.message || 'Erro interno' });
+    }
 });
 
 /* ─── ONBOARDING ─────────────────────────────────────────────────────── */
 app.post('/api/onboarding/step', auth, async (req, res) => {
-    if (req.user.role !== 'owner') return res.status(403).json({ error: 'Apenas o owner pode configurar o workspace' });
-    const { name, description, segment, target_audience, tone, default_cta, platforms, tags, brand_config, logo_url } = req.body;
+    try {
+        if (req.user.role !== 'owner') return res.status(403).json({ error: 'Apenas o owner pode configurar o workspace' });
+        const { name, description, segment, target_audience, tone, default_cta, platforms, tags, brand_config, logo_url } = req.body;
 
-    await db`UPDATE tenants SET
-        name            = COALESCE(${name ?? null}, name),
-        description     = COALESCE(${description ?? null}, description),
-        segment         = COALESCE(${segment ?? null}, segment),
-        target_audience = COALESCE(${target_audience ?? null}, target_audience),
-        tone            = COALESCE(${tone ?? null}, tone),
-        default_cta     = COALESCE(${default_cta ?? null}, default_cta),
-        platforms       = COALESCE(${platforms ? JSON.stringify(platforms) : null}::text[], platforms),
-        tags            = COALESCE(${tags ? JSON.stringify(tags) : null}::text[], tags),
-        brand_config    = CASE
-            WHEN ${brand_config ? JSON.stringify(brand_config) : null}::jsonb IS NOT NULL
-            THEN brand_config || ${brand_config ? JSON.stringify(brand_config) : '{}'}::jsonb
-            ELSE brand_config END,
-        logo_url        = COALESCE(${logo_url ?? null}, logo_url)
-    WHERE id = ${req.user.tenantId}`;
+        await db`UPDATE tenants SET
+            name            = COALESCE(${name ?? null}, name),
+            description     = COALESCE(${description ?? null}, description),
+            segment         = COALESCE(${segment ?? null}, segment),
+            target_audience = COALESCE(${target_audience ?? null}, target_audience),
+            tone            = COALESCE(${tone ?? null}, tone),
+            default_cta     = COALESCE(${default_cta ?? null}, default_cta),
+            platforms       = COALESCE(${platforms ? JSON.stringify(platforms) : null}::text[], platforms),
+            tags            = COALESCE(${tags ? JSON.stringify(tags) : null}::text[], tags),
+            brand_config    = CASE
+                WHEN ${brand_config ? JSON.stringify(brand_config) : null}::jsonb IS NOT NULL
+                THEN brand_config || ${brand_config ? JSON.stringify(brand_config) : '{}'}::jsonb
+                ELSE brand_config END,
+            logo_url        = COALESCE(${logo_url ?? null}, logo_url)
+        WHERE id = ${req.user.tenantId}`;
 
-    res.json({ ok: true });
+        res.json({ ok: true });
+    } catch (err) {
+        console.error('Onboarding step error:', err);
+        res.status(500).json({ error: err.message || 'Erro interno' });
+    }
 });
 
 /* ─── POSTS ───────────────────────────────────────────────────────────── */
@@ -354,36 +374,46 @@ app.post('/api/posts/save', auth, async (req, res) => {
 });
 
 app.get('/api/posts', auth, async (req, res) => {
-    const rows = await db`
-        SELECT id, format, framework, topic, template_style, caption, hashtags, slides, created_at
-        FROM posts
-        WHERE tenant_id = ${req.user.tenantId}
-        ORDER BY created_at DESC LIMIT 20`;
-    res.json(rows);
+    try {
+        const rows = await db`
+            SELECT id, format, framework, topic, template_style, caption, hashtags, slides, created_at
+            FROM posts
+            WHERE tenant_id = ${req.user.tenantId}
+            ORDER BY created_at DESC LIMIT 20`;
+        res.json(rows);
+    } catch (err) {
+        console.error('List posts error:', err);
+        res.status(500).json({ error: err.message || 'Erro interno' });
+    }
 });
 
 /* ─── USAGE ───────────────────────────────────────────────────────────── */
 app.get('/api/usage', auth, async (req, res) => {
-    const month = getMonth();
-    const today = getToday();
+    try {
+        const month = getMonth();
+        const today = getToday();
 
-    const [monthRows, planRows, dailyRows] = await Promise.all([
-        db`SELECT posts_generated FROM usage WHERE tenant_id = ${req.user.tenantId} AND month = ${month}`,
-        db`SELECT plan FROM tenants WHERE id = ${req.user.tenantId}`,
-        db`SELECT posts_generated FROM daily_usage WHERE user_id = ${req.user.userId} AND date = ${today}`,
-    ]);
+        const [monthRows, planRows, dailyRows] = await Promise.all([
+            db`SELECT posts_generated FROM usage WHERE tenant_id = ${req.user.tenantId} AND month = ${month}`,
+            db`SELECT plan FROM tenants WHERE id = ${req.user.tenantId}`,
+            db`SELECT posts_generated FROM daily_usage WHERE user_id = ${req.user.userId} AND date = ${today}`,
+        ]);
 
-    const plan      = planRows[0]?.plan ?? 'trial';
-    const monthUsed = monthRows[0]?.posts_generated ?? 0;
-    const dailyUsed = dailyRows[0]?.posts_generated ?? 0;
+        const plan      = planRows[0]?.plan ?? 'trial';
+        const monthUsed = monthRows[0]?.posts_generated ?? 0;
+        const dailyUsed = dailyRows[0]?.posts_generated ?? 0;
 
-    res.json({
-        used:       monthUsed,
-        limit:      PLANS[plan] ?? 10,
-        plan,
-        dailyUsed,
-        dailyLimit: DAILY_LIMIT,
-    });
+        res.json({
+            used:       monthUsed,
+            limit:      PLANS[plan] ?? 10,
+            plan,
+            dailyUsed,
+            dailyLimit: DAILY_LIMIT,
+        });
+    } catch (err) {
+        console.error('Usage error:', err);
+        res.status(500).json({ error: err.message || 'Erro interno' });
+    }
 });
 
 /* ─── PALETTE SUGGESTION ─────────────────────────────────────────────── */
