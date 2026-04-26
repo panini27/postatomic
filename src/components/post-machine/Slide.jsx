@@ -142,16 +142,16 @@ function TplHL({ d, w, h, brand }) {
             <div style={{ position: 'absolute', top: -w * .28, right: -w * .28, width: w * .64, height: w * .64, borderRadius: '50%', background: `radial-gradient(circle,${modColor}22 0%,transparent 70%)`, pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', bottom: -w * .12, left: p, width: w * .38, height: w * .38, borderRadius: '50%', background: `radial-gradient(circle,${modColor}22 0%,transparent 70%)`, pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', inset: 0, zIndex: 10, paddingTop: p, paddingBottom: p, paddingRight: p, paddingLeft: p + 8, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <GovBadge chip={d.chip} modColor={modColor} fs={20} />
+                <div style={{ flexShrink: 0 }}><GovBadge chip={d.chip} modColor={modColor} fs={20} /></div>
                 <div>
                     {d.stat && <div style={{ fontSize: Math.round(w * .15), fontWeight: 900, lineHeight: 1, letterSpacing: '-.05em', color: modColor, marginBottom: Math.round(h * .012) }}>{d.stat}</div>}
                     {d.statLabel && <div style={{ fontSize: Math.round(sfs * .8), color: LIGHT.t2, marginBottom: Math.round(h * .02), fontWeight: 500 }}>{d.statLabel}</div>}
-                    <div style={{ fontSize: hfs, fontWeight: 900, color: LIGHT.t1, lineHeight: 1.1, letterSpacing: '-.03em', marginBottom: Math.round(h * .02) }}>{d.headline}</div>
+                    <div style={{ fontSize: hfs, fontWeight: 900, color: LIGHT.t1, lineHeight: 1.1, letterSpacing: '-.03em', marginBottom: Math.round(h * .026) }}>{d.headline}</div>
                     {d.subheadline && <div style={{ fontSize: sfs, color: LIGHT.t2, lineHeight: 1.45, fontWeight: 500 }}>{d.subheadline}</div>}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
                     <Sig dark={false} fs={19} name={sigName} />
-                    {d.cta && <div style={{ background: modColor, color: '#fff', padding: `${Math.round(p * .24)}px ${Math.round(p * .52)}px`, borderRadius: 100, fontSize: 22, fontWeight: 800 }}>{d.cta} →</div>}
+                    {d.cta && <div style={{ background: modColor, color: '#fff', padding: `${Math.round(p * .24)}px ${Math.round(p * .52)}px`, borderRadius: 100, fontSize: 22, fontWeight: 800, whiteSpace: 'nowrap', flexShrink: 0 }}>{d.cta} →</div>}
                 </div>
             </div>
         </div>
@@ -167,7 +167,7 @@ function TplFD({ d, w, h, brand }) {
     const modColor = mod.c;
     const sigName = brand?.tenantMeta?.name || 'PostAtomic';
     const p = Math.round(w * .059);
-    const hfs = Math.round(w * .062), ifs = Math.round(w * .034);
+    const hfs = Math.round(w * .056), ifs = Math.round(w * .034);
 
     return (
         <div style={{ width: w, height: h, position: 'relative', overflow: 'hidden', fontFamily: "'Satoshi',sans-serif", background: 'linear-gradient(155deg,#03091A 0%,#060E20 100%)' }}>
@@ -175,13 +175,13 @@ function TplFD({ d, w, h, brand }) {
             <Orb x={w} y={0} r={w * .65} color={modColor} o={.07} />
             <div style={{ position: 'absolute', top: 0, left: p, right: p, height: 3, background: `linear-gradient(90deg,${modColor} 0%,transparent 85%)` }} />
             <div style={{ position: 'absolute', inset: 0, zIndex: 10, padding: p, paddingTop: p + 14, display: 'flex', flexDirection: 'column', gap: Math.round(h * .03) }}>
-                <div>
+                <div style={{ flexShrink: 0 }}>
                     <GovBadge chip={d.chip} modColor={modColor} fs={20} />
-                    <div style={{ fontSize: hfs, fontWeight: 900, color: '#FFF', lineHeight: 1.15, letterSpacing: '-.025em', marginTop: Math.round(h * .024) }}>{d.headline}</div>
-                    {d.subheadline && <div style={{ fontSize: Math.round(w * .031), color: 'rgba(255,255,255,.42)', marginTop: Math.round(h * .012), lineHeight: 1.4, fontWeight: 500 }}>{d.subheadline}</div>}
+                    <div style={{ fontSize: hfs, fontWeight: 900, color: '#FFF', lineHeight: 1.12, letterSpacing: '-.025em', marginTop: Math.round(h * .022), marginBottom: Math.round(h * .022) }}>{d.headline}</div>
+                    {d.subheadline && <div style={{ fontSize: Math.round(w * .031), color: 'rgba(255,255,255,.42)', lineHeight: 1.4, fontWeight: 500 }}>{d.subheadline}</div>}
                 </div>
                 {d.items?.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: Math.round(h * .016), flex: 1 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: Math.round(h * .016), flex: 1, minHeight: 0 }}>
                         {d.items.map((item, i) => (
                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 20, padding: `${Math.round(h * .02)}px ${Math.round(w * .035)}px`, background: 'rgba(255,255,255,.035)', border: '1px solid rgba(255,255,255,.055)', borderRadius: 16, borderLeft: `3px solid ${modColor}` }}>
                                 <div style={{ width: 38, height: 38, borderRadius: 12, flexShrink: 0, background: modColor + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 900, color: modColor }}>{String(i + 1).padStart(2, '0')}</div>
@@ -190,9 +190,9 @@ function TplFD({ d, w, h, brand }) {
                         ))}
                     </div>
                 )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: Math.round(h * .014), borderTop: '1px solid rgba(255,255,255,.07)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: Math.round(h * .014), borderTop: '1px solid rgba(255,255,255,.07)', flexShrink: 0 }}>
                     <Sig fs={19} name={sigName} />
-                    {d.cta && <span style={{ fontSize: 22, color: modColor, fontWeight: 800 }}>{d.cta} →</span>}
+                    {d.cta && <span style={{ fontSize: 22, color: modColor, fontWeight: 800, whiteSpace: 'nowrap', flexShrink: 0 }}>{d.cta} →</span>}
                 </div>
             </div>
         </div>
@@ -208,19 +208,19 @@ function TplFL({ d, w, h, brand }) {
     const modColor = mod.c;
     const sigName = brand?.tenantMeta?.name || 'PostAtomic';
     const p = Math.round(w * .059);
-    const hfs = Math.round(w * .062), ifs = Math.round(w * .034);
+    const hfs = Math.round(w * .056), ifs = Math.round(w * .034);
 
     return (
         <div style={{ width: w, height: h, position: 'relative', overflow: 'hidden', fontFamily: "'Satoshi',sans-serif", background: '#F4F6F9', borderLeft: `8px solid ${modColor}` }}>
             <div style={{ position: 'absolute', bottom: 0, right: 0, width: w * .48, height: w * .48, background: `radial-gradient(circle at bottom right,${modColor}22 0%,transparent 70%)`, pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', inset: 0, zIndex: 10, paddingTop: p, paddingBottom: p, paddingRight: p, paddingLeft: p + 8, display: 'flex', flexDirection: 'column', gap: Math.round(h * .026) }}>
-                <div>
+                <div style={{ flexShrink: 0 }}>
                     <GovBadge chip={d.chip} modColor={modColor} fs={20} />
-                    <div style={{ fontSize: hfs, fontWeight: 900, color: LIGHT.t1, lineHeight: 1.15, letterSpacing: '-.025em', marginTop: Math.round(h * .024) }}>{d.headline}</div>
-                    {d.subheadline && <div style={{ fontSize: Math.round(w * .031), color: LIGHT.t2, marginTop: Math.round(h * .012), lineHeight: 1.4, fontWeight: 500 }}>{d.subheadline}</div>}
+                    <div style={{ fontSize: hfs, fontWeight: 900, color: LIGHT.t1, lineHeight: 1.12, letterSpacing: '-.025em', marginTop: Math.round(h * .022), marginBottom: Math.round(h * .022) }}>{d.headline}</div>
+                    {d.subheadline && <div style={{ fontSize: Math.round(w * .031), color: LIGHT.t2, lineHeight: 1.4, fontWeight: 500 }}>{d.subheadline}</div>}
                 </div>
                 {d.items?.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: Math.round(h * .014), flex: 1 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: Math.round(h * .014), flex: 1, minHeight: 0 }}>
                         {d.items.map((item, i) => (
                             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 18, padding: `${Math.round(h * .019)}px ${Math.round(w * .03)}px`, background: 'rgba(255,255,255,.9)', border: `1px solid ${LIGHT.bord}`, borderRadius: 14, borderLeft: `3px solid ${modColor}`, boxShadow: '0 1px 4px rgba(0,0,0,.05)' }}>
                                 <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: modColor + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 900, color: modColor }}>{i + 1}</div>
@@ -229,9 +229,9 @@ function TplFL({ d, w, h, brand }) {
                         ))}
                     </div>
                 )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: Math.round(h * .012), borderTop: `1px solid ${LIGHT.bord}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: Math.round(h * .012), borderTop: `1px solid ${LIGHT.bord}`, flexShrink: 0 }}>
                     <Sig dark={false} fs={19} name={sigName} />
-                    {d.cta && <div style={{ background: modColor, color: '#fff', padding: '12px 24px', borderRadius: 100, fontSize: 20, fontWeight: 800 }}>{d.cta} →</div>}
+                    {d.cta && <div style={{ background: modColor, color: '#fff', padding: '12px 24px', borderRadius: 100, fontSize: 20, fontWeight: 800, whiteSpace: 'nowrap', flexShrink: 0 }}>{d.cta} →</div>}
                 </div>
             </div>
         </div>
