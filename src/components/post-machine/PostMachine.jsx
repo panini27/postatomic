@@ -13,11 +13,42 @@ const DIMS = {
 };
 
 const TEMPLATES = [
-    { v: 'classic',   l: 'Classic' },
-    { v: 'impact',    l: 'Impact' },
-    { v: 'contrast',  l: 'Contrast' },
-    { v: 'manifesto', l: 'Manifesto' },
+    { v: 'classic',   l: 'Classic',   desc: 'Layout equilibrado com headline, pontos e CTA. Versátil para qualquer conteúdo.' },
+    { v: 'impact',    l: 'Impact',    desc: 'Número gigante que para o scroll. Ideal para dados e resultados impressionantes.' },
+    { v: 'contrast',  l: 'Contrast',  desc: 'Split visual problema vs solução. Poderoso para mostrar transformação.' },
+    { v: 'manifesto', l: 'Manifesto', desc: 'Declaração de posicionamento audaciosa. Forte para autoridade e marca.' },
 ];
+
+const TEMPLATE_DEMOS = {
+    classic: {
+        theme: 'dark', chip: 'ESTRATÉGIA',
+        headline: 'Resultados reais para sua empresa crescer',
+        subheadline: 'Metodologia focada em crescimento sustentável e previsível',
+        items: ['Aumento consistente de leads', 'Redução de custo por aquisição', 'Conversões com mais qualidade'],
+        cta: 'Saiba mais', stat: '', statLabel: '', accentModule: 'mod_0', phase: '',
+    },
+    impact: {
+        theme: 'dark', chip: 'RESULTADO',
+        stat: '3×', statLabel: 'mais conversões',
+        headline: 'Multiplique seus resultados com estratégia',
+        subheadline: 'Empresas que aplicam esse método crescem 3x mais rápido',
+        items: [], cta: 'Quero crescer', accentModule: 'mod_0', phase: '',
+    },
+    contrast: {
+        theme: 'dark', chip: 'COMPARATIVO',
+        headline: 'Antes vs Depois da estratégia certa',
+        subheadline: 'A diferença que uma decisão pode fazer',
+        items: ['Sem previsibilidade', 'Leads frios e caros', 'Crescimento previsível', 'Leads qualificados'],
+        cta: 'Quero mudar', stat: '', statLabel: '', accentModule: 'mod_0', phase: '',
+    },
+    manifesto: {
+        theme: 'dark', chip: 'POSICIONAMENTO',
+        headline: 'Resultados medíocres são uma escolha. Não a sua.',
+        subheadline: 'Empresas que dominam mercados têm uma coisa em comum.',
+        items: ['Clareza de posicionamento', 'Consistência na execução', 'Dados guiam cada decisão'],
+        cta: 'Começar agora', stat: '', statLabel: '', accentModule: 'mod_0', phase: '',
+    },
+};
 
 async function doExport(el, name) {
     if (!window.html2canvas) { alert('Exportador carregando, tente novamente.'); return; }
@@ -92,11 +123,42 @@ function ControlsContent({ fmt, setFmt, fw, setFw, tpl, setTpl, topic, setTopic,
             {/* Template */}
             <div>
                 <SLabel>Template</SLabel>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                    {TEMPLATES.map(t => (
-                        <button key={t.v} onClick={() => setTpl(t.v)} style={pill(tpl === t.v)}>{t.l}</button>
-                    ))}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
+                    {TEMPLATES.map(t => {
+                        const cardW = 100;
+                        const cardH = Math.round(cardW * (1350 / 1080));
+                        const sc = cardW / 1080;
+                        const active = tpl === t.v;
+                        return (
+                            <button key={t.v} onClick={() => setTpl(t.v)} style={{
+                                position: 'relative', background: 'none', border: `2px solid ${active ? primaryColor : 'rgba(255,255,255,0.08)'}`,
+                                borderRadius: 8, cursor: 'pointer', padding: 0, overflow: 'hidden',
+                                transition: 'border-color 0.15s', display: 'flex', flexDirection: 'column',
+                            }}>
+                                {/* Mini slide preview */}
+                                <div style={{ width: cardW, height: cardH, overflow: 'hidden', flexShrink: 0 }}>
+                                    <div style={{ width: 1080, height: 1350, transform: `scale(${sc})`, transformOrigin: 'top left', pointerEvents: 'none' }}>
+                                        <Slide slide={TEMPLATE_DEMOS[t.v]} w={1080} h={1350} fmt="post" idx={0} total={1} templateStyle={t.v} />
+                                    </div>
+                                </div>
+                                {/* Label bar */}
+                                <div style={{ background: active ? `rgba(${primaryColor === '#0CC981' ? '12,201,129' : '37,99,235'},0.15)` : '#0F0F0F', padding: '5px 4px', borderTop: `1px solid ${active ? primaryColor + '40' : 'rgba(255,255,255,0.06)'}`, transition: 'all 0.15s' }}>
+                                    <p style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? primaryColor : '#A8A8A8', textAlign: 'center', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{t.l}</p>
+                                </div>
+                                {/* Active checkmark */}
+                                {active && (
+                                    <div style={{ position: 'absolute', top: 5, right: 5, width: 16, height: 16, borderRadius: '50%', background: primaryColor, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 8px ${primaryColor}80` }}>
+                                        <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5l2 2 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                    </div>
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
+                {/* Description of selected template */}
+                <p style={{ fontSize: 11, color: '#616161', lineHeight: 1.5, marginTop: 8, paddingLeft: 2 }}>
+                    {TEMPLATES.find(t => t.v === tpl)?.desc}
+                </p>
             </div>
 
             {/* Topic */}
@@ -285,19 +347,36 @@ JSON válido apenas:
             </div>
         );
 
-        if (!slides.length) return (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, padding: 40, textAlign: 'center' }}>
-                <div style={{ width: 52, height: 52, borderRadius: 12, background: '#121212', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#0CC981" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        if (!slides.length) {
+            const tplMeta = TEMPLATES.find(t => t.v === tpl) || TEMPLATES[0];
+            const demoSlide = TEMPLATE_DEMOS[tpl] || TEMPLATE_DEMOS.classic;
+            return (
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20, padding: isMobile ? '20px 16px 80px' : 40 }}>
+                    {/* Template preview */}
+                    <div style={{ position: 'relative' }}>
+                        <div style={{ overflow: 'hidden', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 12px 48px rgba(0,0,0,0.7)', width: pw, height: ph, opacity: 0.7, transition: 'opacity 0.3s' }}
+                            onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                            onMouseLeave={e => e.currentTarget.style.opacity = 0.7}>
+                            <div style={{ width: dims.w, height: dims.h, transform: `scale(${slideScale})`, transformOrigin: 'top left' }}>
+                                <Slide slide={demoSlide} w={dims.w} h={dims.h} fmt="post" idx={0} total={1} templateStyle={tpl} />
+                            </div>
+                        </div>
+                        {/* Preview badge */}
+                        <div style={{ position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.75)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)', borderRadius: 99, padding: '3px 10px', whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                            <p style={{ fontSize: 10, fontWeight: 600, color: '#A8A8A8', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Preview · {tplMeta.l}</p>
+                        </div>
+                    </div>
+                    {/* Template info */}
+                    <div style={{ textAlign: 'center', maxWidth: 300 }}>
+                        <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 6, letterSpacing: -0.2 }}>{tplMeta.l}</p>
+                        <p style={{ fontSize: 13, color: '#616161', lineHeight: 1.6, marginBottom: 16 }}>{tplMeta.desc}</p>
+                        <p style={{ fontSize: 12, color: '#404040', lineHeight: 1.5 }}>
+                            {isMobile ? 'Toque em Configurar para ajustar e depois Gerar Post.' : 'Ajuste o foco no painel e clique em Gerar Post para criar com o DNA da sua marca.'}
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <p style={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}>Pronto para gerar</p>
-                    <p style={{ fontSize: 13, color: '#616161', maxWidth: 260, lineHeight: 1.6 }}>
-                        {isMobile ? 'Configure acima e toque em Gerar Post.' : 'Escolha formato, template e foco. O sistema pesquisa dados reais antes de gerar.'}
-                    </p>
-                </div>
-            </div>
-        );
+            );
+        }
 
         return (
             <div style={{ padding: isMobile ? '16px 16px 80px' : 28, display: 'flex', flexDirection: 'column', gap: 20 }}>
